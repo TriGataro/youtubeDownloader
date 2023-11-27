@@ -4,6 +4,8 @@ from pytube import YouTube,Playlist
 from tkinter import *
 from tkinter import messagebox
 import webbrowser
+import threading
+
 
 root=Tk()
 root.title("Youtube Downloader in Python ")
@@ -74,10 +76,12 @@ def downloadEvent():
                         importanInfo(f"Playlist encontrada")
                         playlist= Playlist(url)
                         for yt in playlist.videos:
-                            downloadFile(yt,fileFormat)
+                             threading.Thread(target=downloadFile, args=(yt,fileFormat)).start()
+                             #downloadFile(yt,fileFormat)
                     else:
                         yt=YouTube(url)
-                        downloadFile(yt,fileFormat)
+                        threading.Thread(target=downloadFile, args=(yt,fileFormat)).start()
+                        #downloadFile(yt,fileFormat)
                 else:
                     importanInfo(f"Url no es de youtube")
             except Exception as err:
