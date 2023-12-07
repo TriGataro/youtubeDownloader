@@ -5,19 +5,21 @@ from tkinter import *
 from tkinter import messagebox
 import webbrowser
 import threading
-
+from datetime import datetime
 
 root=Tk()
 root.title("Youtube Downloader in Python ")
 root.iconbitmap(r'youtube_icon.ico')
-root.geometry("650x260")
+root.geometry("650x250")
 
 logPath = StringVar()
 selectedFormat=StringVar()
+logInfo = StringVar()
 selectedFormat.set(".mp4")
-folder=""  
-e=Entry(root,width=100,borderwidth=5,)
-e.grid( row=2, column=0,columnspan=4,padx=10,pady=20)
+folder="" 
+logInfo="" 
+e=Entry(root,width=100,borderwidth=5)
+e.grid( row=2,column=0,columnspan=4,padx=10,pady=20)
 e.config(fg="blue")
 logPath.set("Seleccione carpeta de descarga")
 
@@ -69,11 +71,13 @@ def downloadEvent():
         if(url==""):
             e.focus_set()
             importanInfo(f"Url Vacía")
+            logInfo("Url Vacía")
         else:
+            logInfo("Conectando con youtube")
             try:            
                 if url.lower().startswith('https://www.youtube.com'):
                     if '/playlist?' in url:
-                        importanInfo(f"Playlist encontrada")
+                        logInfo(f"Playlist encontrada")
                         playlist= Playlist(url)
                         for yt in playlist.videos:
                              threading.Thread(target=downloadFile, args=(yt,fileFormat)).start()
@@ -99,7 +103,7 @@ def downloadFile(yt, format):
      new_name=full_Path.replace(".mp4",format)
 
      if not os.path.isfile(new_name):
-        #importanInfo(f"Descargando en formato {format}\nAutor:{yt.author}\nVistas:{yt.views},\n Esto puede tomar varios minutos dependiendo de la duracion del video")
+        logInfo(f"Descargando en formato {format}\nAutor:{yt.author}\nVistas:{yt.views},\n Esto puede tomar varios minutos dependiendo de la duracion del video")
         try:
             video.download(folder)
             os.rename(full_Path,new_name)
@@ -116,10 +120,17 @@ def clear():
 def importanInfo(info):
     messagebox.showinfo("Información",info)
 
+def logInfo(info):
+    current_datetime = datetime.now()
+    print(f'{current_datetime.strftime("%d/%m/%Y %I:%M:%S %p")}\t{info}\n')
+
+
 make_textmenu(root)
 e.focus_set()
 root.bind_class("Entry", "<Button-3><ButtonRelease-3>", show_textmenu)
 root.bind_class("Entry", "<Control-a>", callback_select_all)
+
+
 
 rdb_mp4=Radiobutton(root,text="MP4 (Video)",variable=selectedFormat,value=".mp4")
 rdb_mp3=Radiobutton(root,text="MP3 (Música)",variable=selectedFormat,value=".mp3")
@@ -133,17 +144,15 @@ label_path=Label(root, textvariable=logPath,padx=10,pady=10,fg="#DC143C")
 
 
 label_path.grid(row=0,column=0)
-
 rdb_mp4.grid(row=1,column=0)
 rdb_mp3.grid(row=1,column=1)
 
-button_download.grid(row=3,column=0)
-button_clear.grid(row=3,column=3)
+button_download.grid(row=5,column=0)
+button_clear.grid(row=5,column=3)
 button_goyoutube.grid(row=1,column=3)
 
-button_gogithub.grid(row=4,column=1)
-button_path.grid(row=5,column=0)
-button_open.grid(row=5,column=3)
-
+button_gogithub.grid(row=7,column=1)
+button_path.grid(row=7,column=0)
+button_open.grid(row=7,column=3)
 
 root.mainloop()
